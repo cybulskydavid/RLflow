@@ -6,7 +6,7 @@ type BuildLayerFn = Callable[[network.LayerConfig, int], Tuple[nn.Module, int]]
 
 def build_linear(cfg: network.LinearConfig, input_dim: int) -> Tuple[nn.Linear, int]:
     layer = nn.Linear(input_dim, cfg.out_features, cfg.bias)
-    return layer, input_dim
+    return layer, cfg.out_features
 
 
 def build_conv2d(cfg: network.Conv2dConfig, in_channels: int) -> Tuple[nn.Conv2d, int]:

@@ -42,17 +42,25 @@ class ReLUConfig(LayerConfig):
 
 @dataclass
 class ExtractorConfig:
-    features_dim: int
-    layer_definitions: List[Any]
+    layer_definitions: List[Any] = field(default_factory=list)
 
 
 @dataclass
 class MLPExtractorConfig(ExtractorConfig):
-    features_dim: int = 256
     layer_definitions: List[Any] = field(default_factory=list)
 
 
 @dataclass
 class CNNExtractorConfig(ExtractorConfig):
-    features_dim: int = 512
     layer_definitions: List[Any] = field(default_factory=list)
+
+
+@dataclass
+class IndependentStdHeadConfig:
+    initial_log_std: float = 0.0
+
+
+@dataclass
+class StateDependentGaussianHeadConfig:
+    log_std_min: float = -2
+    log_std_max: float = 2
