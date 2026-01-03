@@ -1,0 +1,6 @@
+defaults:
+  - _self_
+  - env: bipedal_walker
+
+_target_: "configs.train.TrainConfig"
+seed: 42

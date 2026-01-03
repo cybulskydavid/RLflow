@@ -1,0 +1,6 @@
+name: "rollout"
+_target_: src.buffers.rollout.RolloutBuffer
+
+buffer_size: 2048
+gamma: 0.99
+gae_lambda: 0.95

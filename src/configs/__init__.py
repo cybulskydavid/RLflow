@@ -1,5 +1,6 @@
 from hydra.core.config_store import ConfigStore
-from . import network
+from . import network, env, train
 
-def register_config():
+def register_configs():
     cs = ConfigStore.instance()
+    cs.store(name="train_schema", node=train.TrainConfig)

@@ -1,0 +1,7 @@
+name: "ppo"
+_target_: src.algorithms.ppo.PPO
+
+n_epochs: 10
+batch_size: 64
+vf_coef: 0.5
+ent_coef: 0.01
