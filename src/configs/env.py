@@ -1,10 +1,10 @@
-from dataclasses import dataclass
+from dataclasses import MISSING, dataclass
 
 
 @dataclass
 class EnvConfig:
-    id: str = "BipedalWalker-v3"
-    type: str = ""
+    id: str = MISSING
+    type: str = MISSING
     
 
 @dataclass

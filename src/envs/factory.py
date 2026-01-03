@@ -12,15 +12,13 @@ def build_gym_env(cfg:EnvConfig) -> GymEnv:
     return GymEnv(cfg)
 
 
-env_builders: Dict[str, BuildEnvFn] = {
+ENV_BUILDERS: Dict[str, BuildEnvFn] = {
     "gym": build_gym_env
 }
 
 
 def make_env(cfg: EnvConfig) -> BaseEnv:
-    print(cfg)  
-
-    env_builder = env_builders.get(cfg.type)
+    env_builder = ENV_BUILDERS.get(cfg.type)
     
     if env_builder is None:
         return None

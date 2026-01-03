@@ -33,6 +33,8 @@ class BaseBuffer(ABC):
             done: bool) -> None:
         
         assert obs.shape == self.obs_shape
+        assert action.shape == self.act_shape
+        assert self.full is False
         
         self.observations[self.pos] = torch.as_tensor(obs).float()
         self.actions[self.pos] = torch.as_tensor(action).float()
