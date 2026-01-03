@@ -1,2 +1,2 @@
-_target_: "configs.buffer.RolloutBufferConfig"
+_target_: configs.buffer.RolloutBufferConfig
 buffer_size: 2048

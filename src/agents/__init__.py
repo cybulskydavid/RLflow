@@ -1,2 +1,1 @@
-from continuous import *
-from discrete import DiscreteAgent
+from . import continuous, discrete

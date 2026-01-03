@@ -6,6 +6,7 @@ import numpy as np
 import hydra
 from hydra.utils import instantiate
 
+from agents.base import BaseAgent
 from buffers.factory import make_buffer
 from configs import register_configs
 from configs.train import TrainConfig
@@ -13,6 +14,8 @@ from envs.factory import make_env
 from envs.gym_env import GymEnv
 
 import os
+
+from runners.factory import make_runner
 
 
 def set_global_seed(seed: int):
@@ -29,18 +32,8 @@ def main(cfg: DictConfig):
     set_global_seed(config.seed)
     env = make_env(config.env)
     buffer = make_buffer(env.spec.obs_shape, env.spec.action_shape, config.buffer)
- 
-    env.reset(config.seed)
-
-    while True:
-        action = env.env.action_space.sample()
-        print(action)
-        observation, reward, terminated, truncated, info = env.step(action)
-
-        buffer.add(observation, action, reward, truncated or terminated)
-
-        if terminated:
-            env.reset()
+    agent = BaseAgent()
+    runner = make_runner(env, agent, buffer, config.runner)
 
 
 if __name__ == "__main__":
