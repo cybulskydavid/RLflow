@@ -9,6 +9,7 @@ from hydra.utils import instantiate
 from agents.base import BaseAgent
 from agents.continuous import ContinuousAgent
 from agents.factory import make_agent
+from algorithms.ppo import PPO
 from buffers.factory import make_buffer
 from configs import register_configs
 from configs.train import TrainConfig
@@ -18,6 +19,7 @@ from envs.gym_env import GymEnv
 import os
 
 from runners.factory import make_runner
+from trainers.base_trainer import BaseTrainer
 
 
 def set_global_seed(seed: int):
@@ -41,8 +43,11 @@ def main(cfg: DictConfig):
     buffer = make_buffer(env.spec.obs_shape, env.spec.action_shape, config.buffer)
     agent = make_agent(env.spec.obs_shape, env.spec.action_shape, config.agent)
     runner = make_runner(env, agent, buffer, config.runner)
-
-    runner.run()
+    optimizer = torch.optim.Adam(agent.architecture.parameters(), lr=0.0001)
+    algorithm = PPO(optimizer)
+    trainer = BaseTrainer(runner, algorithm)
+    
+    trainer.train()
 
 if __name__ == "__main__":
     register_configs()
