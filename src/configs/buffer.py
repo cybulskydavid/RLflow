@@ -7,6 +7,6 @@ class BufferConfig:
     buffer_size: int = 2048
 
 
-@dataclass
+@dataclass(kw_only=True)
 class RolloutBufferConfig(BufferConfig):
     type: str = "rollout"

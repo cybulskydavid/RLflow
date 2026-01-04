@@ -41,7 +41,7 @@ class StateDependentGaussianHead(VectorHead):
         self.log_std_min = log_std_min
 
 
-    def forward(self, features):
+    def forward(self, features: Tensor) -> Tensor:
         output = super().forward(features)
         mu, log_std = output.chunk(2, dim=-1)
         

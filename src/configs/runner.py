@@ -6,6 +6,6 @@ class RunnerConfig:
     type: str = MISSING
 
 
-@dataclass
+@dataclass(kw_only=True)
 class OnPolicyRunnerConfig(RunnerConfig):
     type: str = "on_policy"

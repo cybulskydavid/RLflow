@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import Any, Tuple
 from networks import extractors, heads
 from torch import nn, Tensor
@@ -8,7 +8,7 @@ class BaseArchitecture(nn.Module, ABC):
     def __init__(self):
         super().__init__()
 
-
+    @abstractmethod
     def forward(self, observations:Tensor) -> Tuple[Any, Tensor]:
         pass
 

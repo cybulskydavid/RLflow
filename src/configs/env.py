@@ -7,7 +7,7 @@ class EnvConfig:
     type: str = MISSING
     
 
-@dataclass
+@dataclass(kw_only=True)
 class GymEnvConfig(EnvConfig):
     type: str = "gym"
     render_mode: str | None = None

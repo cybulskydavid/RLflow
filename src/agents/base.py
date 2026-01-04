@@ -4,9 +4,11 @@ import numpy as np
 from abc import ABC, abstractmethod
 from typing import Tuple, Union, Any
 
-class BaseAgent(nn.Module, ABC):
+from networks.architectures import BaseArchitecture
 
-    def __init__(self, architecture: nn.Module):
+class BaseAgent(ABC):
+
+    def __init__(self, architecture: BaseArchitecture):
         super().__init__()
         self.architecture = architecture
 
@@ -14,7 +16,7 @@ class BaseAgent(nn.Module, ABC):
     @property
     def device(self) -> torch.device:
         try:
-            return next(self.parameters()).device
+            return next(self.architecture.parameters()).device
         except StopIteration:
             return torch.device("cpu")
 

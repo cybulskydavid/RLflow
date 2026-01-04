@@ -20,11 +20,11 @@ class OnPolicyRunner(BaseRunner):
         obs, _ = self.env.reset()
 
         while self.buffer.full is False:
-            action = self.env.action_space.sample()
+            action, log_action_prob, value = self.agent.get_action(obs)
             print(action)
             observation, reward, terminated, truncated, info = self.env.step(action)
 
-            self.buffer.add(observation, action, reward, truncated or terminated, np.log(action), 1.0)
+            self.buffer.add(observation, action, reward, truncated or terminated, log_action_prob, value)
 
             if terminated:
                 self.env.reset()

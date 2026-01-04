@@ -1,6 +1,7 @@
 defaults:
   - _self_
   - env: bipedal_walker
+  - agent: continuous
   - buffer: rollout
   - runner: on_policy
 

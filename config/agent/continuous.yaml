@@ -1,0 +1,5 @@
+defaults:
+  - _self_
+  - architecture: separated_architecture
+
+_target_: configs.agent.ContinuousAgentConfig
