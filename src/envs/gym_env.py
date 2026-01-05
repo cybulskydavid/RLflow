@@ -27,7 +27,6 @@ class GymEnv(BaseEnv):
 
     def step(self, 
              action: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray, Dict[str, Any]]:
-        print(action)
         return self.env.step(action)
 
 

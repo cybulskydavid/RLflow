@@ -1,13 +1,10 @@
-from omegaconf import DictConfig, OmegaConf
+from omegaconf import DictConfig
 import torch
 import random
 
 import numpy as np
 import hydra
 from hydra.utils import instantiate
-
-from agents.base import BaseAgent
-from agents.continuous import ContinuousAgent
 from agents.factory import make_agent
 from algorithms.ppo import PPO
 from buffers.factory import make_buffer
@@ -31,19 +28,15 @@ def set_global_seed(seed: int):
 
 @hydra.main(version_base=None, config_path="../config", config_name="train")
 def main(cfg: DictConfig):
-    
-    print(cfg)
 
     config: TrainConfig = hydra.utils.instantiate(cfg)
-
-    print(config)
 
     set_global_seed(config.seed)
     env = make_env(config.env)
     buffer = make_buffer(env.spec.obs_shape, env.spec.action_shape, config.buffer)
     agent = make_agent(env.spec.obs_shape, env.spec.action_shape, config.agent)
     runner = make_runner(env, agent, buffer, config.runner)
-    optimizer = torch.optim.Adam(agent.architecture.parameters(), lr=0.0001)
+    optimizer = torch.optim.Adam(agent.architecture.parameters(), lr=0.00003)
     algorithm = PPO(optimizer)
     trainer = BaseTrainer(runner, algorithm)
     

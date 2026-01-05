@@ -29,8 +29,6 @@ def build_shared_architecture():
 def build_separated_architecture(obs_dim: int, action_dim: int, cfg: SeparatedArchitectureConfig):
     build_actor_head = VECTOR_HEAD_BUILDERS.get(cfg.actor_head.type)
 
-    print(build_actor_head)
-
     if build_actor_head is None:
         return None
 
@@ -51,8 +49,6 @@ ARCHITECTURE_BUILDERS: Dict[str, BuildArchitectureFn] = {
 
 def make_architecture(obs_dim: int, action_dim: int, cfg: BaseArchitectureConfig):
     build_architecture = ARCHITECTURE_BUILDERS.get(cfg.type)
-
-    print(build_architecture)
 
     if build_architecture is None:
         return None

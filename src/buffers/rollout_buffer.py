@@ -80,6 +80,9 @@ class RolloutBuffer(BaseBuffer):
                 self.values[batch_inds].to(self.device)
             )
 
+        self.reset()
+
+
     def reset(self):
         self.pos = 0
         self.full = False

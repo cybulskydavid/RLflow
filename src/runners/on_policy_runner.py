@@ -13,8 +13,8 @@ class OnPolicyRunner(BaseRunner):
                  agent: BaseAgent, 
                  buffer: RolloutBuffer,
                  cfg: OnPolicyRunnerConfig):
-        super().__init__(env, agent)
-        self.buffer = buffer
+        super().__init__(env, agent, buffer)
+        self.config = cfg
 
     
     def run(self):
@@ -22,7 +22,6 @@ class OnPolicyRunner(BaseRunner):
 
         while self.buffer.full is False:
             action, log_action_prob, value = self.agent.get_action(obs)
-            print(action)
             obs, reward, terminated, truncated, info = self.env.step(action)
             done = truncated or terminated
 

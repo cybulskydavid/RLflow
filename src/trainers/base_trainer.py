@@ -8,5 +8,9 @@ class BaseTrainer:
         self.algorithm = algorithm
 
     
-    def train():
-        pass
+    def train(self):
+        for i in range(10000):
+            self.runner.run()
+            stats = self.algorithm.update(self.runner.agent, self.runner.buffer)
+            print(i)
+            print(stats)
