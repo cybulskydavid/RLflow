@@ -44,7 +44,7 @@ class BaseAgent(ABC):
     @abstractmethod
     def evaluate_actions(
         self, 
-        obs: torch.Tensor, 
+        states: torch.Tensor, 
         actions: torch.Tensor
     ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         pass

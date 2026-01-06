@@ -8,42 +8,42 @@ import torch
 class BaseBuffer(ABC):
     def __init__(self, 
                  buffer_size: int, 
-                 obs_shape: Tuple[int,...], 
-                 act_shape: Tuple[int,...], 
+                 state_shape: Tuple[int,...], 
+                 action_shape: Tuple[int,...], 
                  device: str = "cpu"):
         super().__init__()
         self.buffer_size = buffer_size
         self.device = torch.device(device)
-        self.pos = 0
-        self.full = False
+        self.position = 0
+        self.is_full = False
 
-        self.obs_shape = obs_shape
-        self.act_shape = act_shape
+        self.state_shape = state_shape
+        self.action_shape = action_shape
 
-        self.observations = torch.zeros((buffer_size, *obs_shape), dtype=torch.float32)
-        self.actions = torch.zeros((buffer_size, *act_shape), dtype=torch.float32)
+        self.states = torch.zeros((buffer_size, *state_shape), dtype=torch.float32)
+        self.actions = torch.zeros((buffer_size, *action_shape), dtype=torch.float32)
         
         self.rewards = torch.zeros((buffer_size, 1), dtype=torch.float32)
         self.dones = torch.zeros((buffer_size, 1), dtype=torch.float32)
 
     def add(self, 
-            obs: np.ndarray, 
+            state: np.ndarray, 
             action: np.ndarray, 
             reward: float, 
             done: bool) -> None:
         
-        assert obs.shape == self.obs_shape
-        assert action.shape == self.act_shape
-        assert self.full is False
+        assert state.shape == self.state_shape
+        assert action.shape == self.action_shape
+        assert self.is_full is False
         
-        self.observations[self.pos] = torch.as_tensor(obs).float()
-        self.actions[self.pos] = torch.as_tensor(action).float()
-        self.rewards[self.pos] = torch.as_tensor(reward).float()
-        self.dones[self.pos] = torch.as_tensor(done).float()
+        self.states[self.position] = torch.as_tensor(state).float()
+        self.actions[self.position] = torch.as_tensor(action).float()
+        self.rewards[self.position] = torch.as_tensor(reward).float()
+        self.dones[self.position] = torch.as_tensor(done).float()
 
-        self.pos += 1
-        if self.pos == self.buffer_size:
-            self.full = True
+        self.position += 1
+        if self.position == self.buffer_size:
+            self.is_full = True
 
     @abstractmethod
     def get_generator(self, batch_size: int) -> Generator:

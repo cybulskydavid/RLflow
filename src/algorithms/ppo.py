@@ -6,7 +6,7 @@ from torch import nn
 
 
 class PPO(BaseAlgorithm):
-    def __init__(self, optimizer):
+    def __init__(self, optimizer: torch.optim.Optimizer):
         super().__init__()
         self.optimizer = optimizer
         self.eps_clip = 0.2
@@ -29,7 +29,9 @@ class PPO(BaseAlgorithm):
         for epoch in range(self.k_epochs):
             for old_states, old_actions, old_log_probs, advantages, returns, old_values in buffer.get_generator(self.batch_size):
                 values, log_probs, dist_entropy = agent.evaluate_actions(old_states, old_actions)
-                
+                values = values.squeeze()
+                returns = returns.squeeze()   
+
                 ratios = torch.exp(log_probs - old_log_probs.detach())
                 advantages = (advantages - advantages.mean()) / (advantages.std() + 1e-7)
 
@@ -51,28 +53,28 @@ class PPO(BaseAlgorithm):
                 avg_v_loss += value_loss.item()
                 avg_entropy += dist_entropy.mean().item()
                 
-                if epoch == self.k_epochs - 1:
-                    with torch.no_grad():
-                        linear_layers = [
-                            module for module in agent.architecture.modules()
-                            if isinstance(module, nn.Linear)
-                        ]
+                # if epoch == self.k_epochs - 1:
+                #     with torch.no_grad():
+                #         linear_layers = [
+                #             module for module in agent.architecture.modules()
+                #             if isinstance(module, nn.Linear)
+                #         ]
 
-                        for layer in linear_layers:
-                            grad = layer.weight.grad  # nn.Linear weight
-                            grad_flat = grad.detach().view(-1)
+                #         for layer in linear_layers:
+                #             grad = layer.weight.grad  # nn.Linear weight
+                #             grad_flat = grad.detach().view(-1)
 
-                            mean = grad_flat.mean()
-                            std = grad_flat.std()
-                            min_val = grad_flat.min()
-                            max_val = grad_flat.abs().max()
+                #             mean = grad_flat.mean()
+                #             std = grad_flat.std()
+                #             min_val = grad_flat.min()
+                #             max_val = grad_flat.abs().max()
 
-                            print(
-                                layer,
-                                "mean:", mean.item(),
-                                "std:", std.item(),
-                                "max:", max_val.item()
-                                )
+                #             print(
+                #                 layer,
+                #                 "mean:", mean.item(),
+                #                 "std:", std.item(),
+                #                 "max:", max_val.item()
+                #                 )
 
         total_updates = self.k_epochs * (buffer.buffer_size / self.batch_size)
         

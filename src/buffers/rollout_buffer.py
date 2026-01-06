@@ -8,12 +8,12 @@ from buffers.base_buffer import BaseBuffer
 class RolloutBuffer(BaseBuffer):
     def __init__(self, 
                  buffer_size: int, 
-                 obs_shape: Tuple[int,...], 
-                 act_shape: Tuple[int,...],
+                 state_shape: Tuple[int,...], 
+                 action_shape: Tuple[int,...],
                  device: str = "cpu",
                  gamma: float = 0.99,
                  gae_lambda: float = 0.95):
-        super().__init__(buffer_size, obs_shape, act_shape, device)
+        super().__init__(buffer_size, state_shape, action_shape, device)
         
         self.gamma = gamma
         self.gae_lambda = gae_lambda
@@ -26,20 +26,19 @@ class RolloutBuffer(BaseBuffer):
 
 
     def add(self, 
-            obs: np.ndarray, 
+            state: np.ndarray, 
             action :np.ndarray, 
             reward: float, 
             done: bool, 
             log_prob: float, 
             value: float) -> None:
         
-        if self.full:
-            return
-        else:
-            self.log_probs[self.pos] = torch.tensor(log_prob)
-            self.values[self.pos] = torch.tensor(value)
-
-            super().add(obs, action, reward, done)
+        if self.is_full:
+            raise RuntimeError
+        
+        self.log_probs[self.position] = torch.tensor(log_prob)
+        self.values[self.position] = torch.tensor(value)
+        super().add(state, action, reward, done)
 
 
     def compute_gae(self, last_value: float, next_done: bool):
@@ -65,6 +64,10 @@ class RolloutBuffer(BaseBuffer):
 
 
     def get_generator(self, batch_size: int) -> Generator:
+        def reset():
+            self.position = 0
+            self.is_full = False
+
         indices = np.random.permutation(self.buffer_size)
 
         for start in range(0, self.buffer_size, batch_size):
@@ -72,7 +75,7 @@ class RolloutBuffer(BaseBuffer):
             batch_inds = indices[start:end]
             
             yield (
-                self.observations[batch_inds].to(self.device),
+                self.states[batch_inds].to(self.device),
                 self.actions[batch_inds].to(self.device),
                 self.log_probs[batch_inds].to(self.device),
                 self.advantages[batch_inds].to(self.device),
@@ -80,9 +83,5 @@ class RolloutBuffer(BaseBuffer):
                 self.values[batch_inds].to(self.device)
             )
 
-        self.reset()
+        reset()
 
-
-    def reset(self):
-        self.pos = 0
-        self.full = False
