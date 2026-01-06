@@ -1,1 +1,18 @@
 _target_: configs.network.ExtractorConfig
+
+layer_definitions:
+  - type: LayerNorm
+  - type: linear
+    out_features: 256
+    bias: True
+  - type: ReLU
+  - type: LayerNorm
+  - type: linear
+    out_features: 256
+    bias: True
+  - type: ReLU
+  - type: LayerNorm
+  - type: linear
+    out_features: 256
+    bias: True
+  - type: ReLU

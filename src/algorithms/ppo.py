@@ -2,17 +2,20 @@ import torch
 from agents.base import BaseAgent
 from algorithms.base_algorithm import BaseAlgorithm
 from buffers.rollout_buffer import RolloutBuffer
+from torch import nn
 
 
 class PPO(BaseAlgorithm):
     def __init__(self, optimizer):
         super().__init__()
         self.optimizer = optimizer
-        self.eps_clip = 0.1
+        self.eps_clip = 0.2
         self.c_value = 0.5
-        self.c_entropy = 0.1
+        self.c_entropy = 0.01
         self.batch_size = 64
-        self.k_epochs = 80
+        self.k_epochs = 10
+
+        self.mse_loss = torch.nn.MSELoss()
 
 
     def update(self, agent: BaseAgent, buffer: RolloutBuffer):
@@ -24,10 +27,9 @@ class PPO(BaseAlgorithm):
         avg_entropy = 0
 
         for epoch in range(self.k_epochs):
-            for old_states, old_actions, old_log_probs, old_values, advantages, returns in buffer.get_generator(self.batch_size):
+            for old_states, old_actions, old_log_probs, advantages, returns, old_values in buffer.get_generator(self.batch_size):
                 values, log_probs, dist_entropy = agent.evaluate_actions(old_states, old_actions)
                 
-                values = values.squeeze()
                 ratios = torch.exp(log_probs - old_log_probs.detach())
                 advantages = (advantages - advantages.mean()) / (advantages.std() + 1e-7)
 
@@ -35,7 +37,7 @@ class PPO(BaseAlgorithm):
                 surr2 = torch.clamp(ratios, 1 - self.eps_clip, 1 + self.eps_clip) * advantages
             
                 policy_loss = -torch.min(surr1, surr2).mean()
-                value_loss = torch.mean(torch.square(values - returns))
+                value_loss = self.mse_loss(values, returns)
                 entropy_loss = -dist_entropy.mean()
 
                 loss = policy_loss + (self.c_value * value_loss) + (self.c_entropy * entropy_loss)
@@ -48,6 +50,29 @@ class PPO(BaseAlgorithm):
                 avg_p_loss += policy_loss.item()
                 avg_v_loss += value_loss.item()
                 avg_entropy += dist_entropy.mean().item()
+                
+                if epoch == self.k_epochs - 1:
+                    with torch.no_grad():
+                        linear_layers = [
+                            module for module in agent.architecture.modules()
+                            if isinstance(module, nn.Linear)
+                        ]
+
+                        for layer in linear_layers:
+                            grad = layer.weight.grad  # nn.Linear weight
+                            grad_flat = grad.detach().view(-1)
+
+                            mean = grad_flat.mean()
+                            std = grad_flat.std()
+                            min_val = grad_flat.min()
+                            max_val = grad_flat.abs().max()
+
+                            print(
+                                layer,
+                                "mean:", mean.item(),
+                                "std:", std.item(),
+                                "max:", max_val.item()
+                                )
 
         total_updates = self.k_epochs * (buffer.buffer_size / self.batch_size)
         

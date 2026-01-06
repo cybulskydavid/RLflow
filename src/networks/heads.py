@@ -5,7 +5,8 @@ import torch
 class ScalarHead(nn.Module):
     def __init__(self, feature_dim: int):
         super().__init__()
-        self.model = nn.Linear(feature_dim, 1)
+        self.model = nn.Sequential(
+                        nn.Linear(feature_dim, 1))
     
     def forward(self, features:Tensor) -> Tensor:
         return self.model(features)
@@ -14,9 +15,11 @@ class ScalarHead(nn.Module):
 class VectorHead(nn.Module):
     def __init__(self, feature_dim: int, action_dim: int):
         super().__init__()
-        self.model = nn.Linear(feature_dim, action_dim)
+        self.model = nn.Sequential(
+            nn.Linear(feature_dim, action_dim),
+            nn.Tanh())
 
-    
+
     def forward(self, features:Tensor) -> Tensor:
         return self.model(features)
     
@@ -24,9 +27,9 @@ class VectorHead(nn.Module):
 class IndependentStdHead(VectorHead):
     def __init__(self, feature_dim: int, action_dim: int, initial_log_std: float):
         super().__init__(feature_dim, action_dim)
-        self.log_std = nn.Parameter(torch.ones(action_dim) * initial_log_std)
+        self.log_std = torch.ones(action_dim) * initial_log_std
 
-    
+
     def forward(self, features: Tensor) -> Tuple[Tensor, Tensor]:
         mu = super().forward(features)
         std = self.log_std.expand_as(mu).exp()

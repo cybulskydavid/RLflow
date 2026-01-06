@@ -10,5 +10,5 @@ class EnvConfig:
 @dataclass(kw_only=True)
 class GymEnvConfig(EnvConfig):
     type: str = "gym"
-    render_mode: str | None = None
+    # render_mode: str | None = None
     max_episode_steps: int = 1600

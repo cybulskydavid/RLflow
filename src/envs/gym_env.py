@@ -7,8 +7,7 @@ from configs.env import GymEnvConfig
 
 class GymEnv(BaseEnv):
     def __init__(self, cfg: GymEnvConfig):
-        self.env = gym.make(cfg.id, 
-                            render_mode=cfg.render_mode)
+        self.env = gym.make(cfg.id)
         
         self._spec = EnvSpec(
             obs_shape=self.env.observation_space.shape,

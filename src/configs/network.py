@@ -33,11 +33,21 @@ class MaxPool2dConfig(LayerConfig):
 @dataclass(kw_only=True)
 class FlattenConfig(LayerConfig):
     type: str = "flatten"
+    
+
+@dataclass(kw_only=True)
+class LayerNormConfig(LayerConfig):
+    type: str = "LayerNorm"
 
 
 @dataclass(kw_only=True)
 class ReLUConfig(LayerConfig):
     type: str = "ReLU"
+
+
+@dataclass(kw_only=True)
+class TanhConfig(LayerConfig):
+    type: str = "Tanh"
 
 
 @dataclass
@@ -48,17 +58,19 @@ class ExtractorConfig:
 @dataclass
 class VectorHeadConfig:
     type: str = "vector_head"
+    activation: LayerConfig = TanhConfig
 
 
 dataclass
 class ScalarHeadConfig:
     type: str = "scalar_head"
+    activation: LayerConfig = TanhConfig
 
 
 @dataclass(kw_only=True)
 class IndependentStdHeadConfig(VectorHeadConfig):
     type: str = "independent_std_head"
-    initial_log_std: float = 0.0
+    initial_log_std: float = -0.5
 
 
 @dataclass(kw_only=True)

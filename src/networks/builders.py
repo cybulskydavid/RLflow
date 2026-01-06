@@ -23,16 +23,24 @@ def build_flatten(cfg: network.FlattenConfig, input_dim: int) -> Tuple[nn.Flatte
     return nn.Flatten(), input_dim
 
 
+def build_layer_norm(cfg: network.LayerNormConfig, input_dim: int) -> Tuple[nn.LayerNorm, int]:
+    return nn.LayerNorm([input_dim]), input_dim
+
+
 def build_relu(cfg: network.ReLUConfig, input_dim: int) -> Tuple[nn.ReLU, int]:
     return nn.ReLU(), input_dim
 
+def build_tanh(cfg: network.TanhConfig, input_dim: int) -> Tuple[nn.Tanh, int]:
+    return nn.Tanh(), input_dim
 
 LAYER_BUILDERS: Dict[str, BuildLayerFn] = {
     "linear": build_linear,
     "conv2d": build_conv2d,
     "maxpool2d": build_maxpool2d,
     "flatten": build_flatten,
-    "ReLU": build_relu
+    "LayerNorm": build_layer_norm,
+    "ReLU": build_relu,
+    "Tanh": build_tanh
 }
 
 

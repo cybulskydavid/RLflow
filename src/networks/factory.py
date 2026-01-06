@@ -13,7 +13,7 @@ def build_vector_head(feature_dim: int, action_dim: int) -> VectorHead:
 
 
 def build_independent_std_head(feature_dim: int, action_dim: int):
-    return IndependentStdHead(feature_dim, action_dim, 1)
+    return IndependentStdHead(feature_dim, action_dim, -0.5)
 
 
 VECTOR_HEAD_BUILDERS: Dict[str, BuildVectorHeadFn] = {

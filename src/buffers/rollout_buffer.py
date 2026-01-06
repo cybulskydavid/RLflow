@@ -11,7 +11,7 @@ class RolloutBuffer(BaseBuffer):
                  obs_shape: Tuple[int,...], 
                  act_shape: Tuple[int,...],
                  device: str = "cpu",
-                 gamma: float = 0.95,
+                 gamma: float = 0.99,
                  gae_lambda: float = 0.95):
         super().__init__(buffer_size, obs_shape, act_shape, device)
         
@@ -66,7 +66,7 @@ class RolloutBuffer(BaseBuffer):
 
     def get_generator(self, batch_size: int) -> Generator:
         indices = np.random.permutation(self.buffer_size)
-        
+
         for start in range(0, self.buffer_size, batch_size):
             end = start + batch_size
             batch_inds = indices[start:end]

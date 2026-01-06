@@ -8,7 +8,7 @@ class ContinuousAgent(BaseAgent):
         
         with torch.no_grad():
             (mu, std), value = self.architecture(obs)
-            
+
             dist = torch.distributions.Normal(mu, std)
             
             if deterministic:
@@ -29,8 +29,8 @@ class ContinuousAgent(BaseAgent):
         
         dist = torch.distributions.Normal(mu, std)
         
-        log_probs = dist.log_prob(actions).sum(dim=-1)
+        log_probs = dist.log_prob(actions)
         
-        entropy = dist.entropy().sum(dim=-1)
+        entropy = dist.entropy()
         
         return values, log_probs, entropy

@@ -19,6 +19,9 @@ from runners.factory import make_runner
 from trainers.base_trainer import BaseTrainer
 
 
+lr_actor = 0.00003           # Learning rate
+lr_critic = 0.0001
+
 def set_global_seed(seed: int):
     random.seed(seed)
     np.random.seed(seed)
@@ -36,7 +39,12 @@ def main(cfg: DictConfig):
     buffer = make_buffer(env.spec.obs_shape, env.spec.action_shape, config.buffer)
     agent = make_agent(env.spec.obs_shape, env.spec.action_shape, config.agent)
     runner = make_runner(env, agent, buffer, config.runner)
-    optimizer = torch.optim.Adam(agent.architecture.parameters(), lr=0.00003)
+    optimizer = torch.optim.Adam([
+        {'params': agent.architecture.actor_extractor.parameters(), 'lr': lr_actor},
+        {'params': agent.architecture.actor_head.parameters(), 'lr': lr_actor},
+        {'params': agent.architecture.critic_extractor.parameters(), 'lr': lr_critic},
+        {'params': agent.architecture.critic_head.parameters(), 'lr': lr_critic}
+    ])
     algorithm = PPO(optimizer)
     trainer = BaseTrainer(runner, algorithm)
     

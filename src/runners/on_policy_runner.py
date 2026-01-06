@@ -15,23 +15,39 @@ class OnPolicyRunner(BaseRunner):
                  cfg: OnPolicyRunnerConfig):
         super().__init__(env, agent, buffer)
         self.config = cfg
+        obs, _ = self.env.reset()
+        self.state = obs
+        self.current_ep_reward = 0
+        self.time_step = 0
+        self.episode = 1
 
     
     def run(self):
-        obs, _ = self.env.reset()
-
         while self.buffer.full is False:
-            action, log_action_prob, value = self.agent.get_action(obs)
-            obs, reward, terminated, truncated, info = self.env.step(action)
+            action, log_action_prob, value = self.agent.get_action(self.state)
+            next_state, reward, terminated, truncated, info = self.env.step(action)
             done = truncated or terminated
 
-            self.buffer.add(obs, action, reward, done, log_action_prob, value)
+            self.current_ep_reward += reward
+            self.time_step += 1
 
-            if terminated:
-                self.env.reset()
+            self.buffer.add(self.state, action, reward, done, log_action_prob, value)
+            self.state = next_state
 
-        action, log_action_prob, value = self.agent.get_action(obs)
+            if done:
+                obs, _ = self.env.reset()
+                self.state = obs
+                
+                print(f"Epizod: {self.episode} | Wynik: {self.current_ep_reward:.2f} | Kroki: {self.time_step}")
+                self.current_ep_reward = 0
+                self.time_step = 0
+                self.episode += 1
+
+
+        action, log_action_prob, value = self.agent.get_action(self.state)
         obs, reward, terminated, truncated, info = self.env.step(action)
         done = truncated or terminated
+
+        # self.obs = obs
 
         self.buffer.compute_gae(value, done)
