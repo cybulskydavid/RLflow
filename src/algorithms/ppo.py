@@ -52,29 +52,6 @@ class PPO(BaseAlgorithm):
                 avg_p_loss += policy_loss.item()
                 avg_v_loss += value_loss.item()
                 avg_entropy += dist_entropy.mean().item()
-                
-                # if epoch == self.k_epochs - 1:
-                #     with torch.no_grad():
-                #         linear_layers = [
-                #             module for module in agent.architecture.modules()
-                #             if isinstance(module, nn.Linear)
-                #         ]
-
-                #         for layer in linear_layers:
-                #             grad = layer.weight.grad  # nn.Linear weight
-                #             grad_flat = grad.detach().view(-1)
-
-                #             mean = grad_flat.mean()
-                #             std = grad_flat.std()
-                #             min_val = grad_flat.min()
-                #             max_val = grad_flat.abs().max()
-
-                #             print(
-                #                 layer,
-                #                 "mean:", mean.item(),
-                #                 "std:", std.item(),
-                #                 "max:", max_val.item()
-                #                 )
 
         total_updates = self.k_epochs * (buffer.buffer_size / self.batch_size)
         

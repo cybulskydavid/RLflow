@@ -1,8 +1,8 @@
 defaults:
   - _self_
   - actor_extractor: extractor
-  - critic_extractor: extractor
   - actor_head: independent_std_head
+  - critic_extractor: extractor
   - critic_head: scalar_head
 
 

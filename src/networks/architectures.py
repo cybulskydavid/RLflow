@@ -32,13 +32,13 @@ class SharedArchitecture(BaseArchitecture):
 class SeparatedArchitecture(BaseArchitecture):
     def __init__(self, 
                  actor_extractor: extractors.Extractor, 
-                 critic_extractor: extractors.Extractor,
                  actor_head: heads.VectorHead,
+                 critic_extractor: extractors.Extractor,
                  critic_head: heads.ScalarHead):
         super().__init__()
         self.actor_extractor = actor_extractor
-        self.critic_extractor = critic_extractor
         self.actor_head = actor_head
+        self.critic_extractor = critic_extractor
         self.critic_head = critic_head
     
 

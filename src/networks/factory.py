@@ -33,11 +33,11 @@ def build_separated_architecture(obs_dim: int, action_dim: int, cfg: SeparatedAr
         return None
 
     actor_extractor = Extractor(obs_dim[0], cfg.actor_extractor.layer_definitions)
-    critic_extractor = Extractor(obs_dim[0], cfg.critic_extractor.layer_definitions)
     actor_head = build_actor_head(actor_extractor.feature_dim, action_dim[0])
+    critic_extractor = Extractor(obs_dim[0], cfg.critic_extractor.layer_definitions)
     critic_head = ScalarHead(critic_extractor.feature_dim)
 
-    return SeparatedArchitecture(actor_extractor, critic_extractor, actor_head, critic_head)
+    return SeparatedArchitecture(actor_extractor, actor_head, critic_extractor, critic_head)
 
 
 

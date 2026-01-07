@@ -23,6 +23,7 @@ lr_actor = 0.00003           # Learning rate
 lr_critic = 0.0001
 
 def set_global_seed(seed: int):
+    SEED = seed
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
@@ -38,6 +39,10 @@ def main(cfg: DictConfig):
     env = make_env(config.env)
     buffer = make_buffer(env.spec.obs_shape, env.spec.action_shape, config.buffer)
     agent = make_agent(env.spec.obs_shape, env.spec.action_shape, config.agent)
+
+    # print(agent.architecture)
+    # raise Exception("Debug stop")
+
     runner = make_runner(env, agent, buffer, config.runner)
     optimizer = torch.optim.Adam([
         {'params': agent.architecture.actor_extractor.parameters(), 'lr': lr_actor},

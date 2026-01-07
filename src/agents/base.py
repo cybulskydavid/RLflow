@@ -21,7 +21,7 @@ class BaseAgent(ABC):
             return torch.device("cpu")
 
 
-    def _obs_to_tensor(self, obs: Union[np.ndarray, torch.Tensor]) -> torch.Tensor:
+    def _state_to_tensor(self, obs: Union[np.ndarray, torch.Tensor]) -> torch.Tensor:
     
         if not isinstance(obs, torch.Tensor):
             obs = torch.as_tensor(obs, dtype=torch.float32)
@@ -35,9 +35,9 @@ class BaseAgent(ABC):
     @abstractmethod
     def get_action(
         self, 
-        obs: Union[np.ndarray, torch.Tensor], 
+        state: torch.Tensor, 
         deterministic: bool = False
-    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         pass
 
 
@@ -48,12 +48,3 @@ class BaseAgent(ABC):
         actions: torch.Tensor
     ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         pass
-
-
-    def get_value(self, obs: Union[np.ndarray, torch.Tensor]) -> np.ndarray:
-        obs = self._obs_to_tensor(obs)
-
-        with torch.no_grad():
-            _, value = self.architecture(obs)
-
-        return value.cpu().numpy()

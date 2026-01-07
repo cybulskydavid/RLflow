@@ -8,7 +8,11 @@ from configs.env import GymEnvConfig
 class GymEnv(BaseEnv):
     def __init__(self, cfg: GymEnvConfig):
         self.env = gym.make(cfg.id)
-        
+        # self.env = gym.wrappers.RecordEpisodeStatistics(self.env)
+        # self.env = gym.wrappers.ClipAction(self.env)
+        # self.env = gym.wrappers.NormalizeObservation(self.env)
+        # self.env = gym.wrappers.NormalizeReward(self.env)
+
         self._spec = EnvSpec(
             obs_shape=self.env.observation_space.shape,
             action_shape=self.env.action_space.shape,
