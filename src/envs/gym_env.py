@@ -1,17 +1,13 @@
 from typing import Any, Dict, Tuple
 import numpy as np
 import gymnasium as gym
+from torch import Tensor
 from envs.base_env import BaseEnv, EnvSpec
-from configs.env import GymEnvConfig
 
 
 class GymEnv(BaseEnv):
-    def __init__(self, cfg: GymEnvConfig):
-        self.env = gym.make(cfg.id)
-        # self.env = gym.wrappers.RecordEpisodeStatistics(self.env)
-        # self.env = gym.wrappers.ClipAction(self.env)
-        # self.env = gym.wrappers.NormalizeObservation(self.env)
-        # self.env = gym.wrappers.NormalizeReward(self.env)
+    def __init__(self, id: str, render_mode: str = None) -> None:
+        self.env = gym.make(id, render_mode=render_mode)
 
         self._spec = EnvSpec(
             obs_shape=self.env.observation_space.shape,
@@ -25,12 +21,12 @@ class GymEnv(BaseEnv):
 
 
     def reset(self, seed: int = None) -> Tuple[Any, Dict[str, Any]]:
-        return self.env.reset(seed=seed)
+        return self.env.reset(seed=np.random.randint(0, 10000))
 
 
     def step(self, 
-             action: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray, Dict[str, Any]]:
-        return self.env.step(action)
+             action: Tensor) -> Tuple[np.ndarray, np.ndarray, np.ndarray, Dict[str, Any]]:
+        return self.env.step(action.numpy())
 
 
     def close(self) -> None:

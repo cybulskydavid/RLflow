@@ -9,11 +9,9 @@ class BaseBuffer(ABC):
     def __init__(self, 
                  buffer_size: int, 
                  state_shape: Tuple[int,...], 
-                 action_shape: Tuple[int,...], 
-                 device: str = "cpu"):
+                 action_shape: Tuple[int,...]):
         super().__init__()
         self.buffer_size = buffer_size
-        self.device = torch.device(device)
         self.position = 0
         self.is_full = False
 
@@ -45,6 +43,6 @@ class BaseBuffer(ABC):
         if self.position == self.buffer_size:
             self.is_full = True
 
-    @abstractmethod
-    def get_generator(self, batch_size: int) -> Generator:
-        pass
+    # @abstractmethod
+    # def get_generator(self, batch_size: int) -> Generator:
+    #     pass

@@ -1,0 +1,104 @@
+import torch
+import torch.nn.functional as F
+from copy import deepcopy
+from agents.base import BaseAgent
+from algorithms.base_algorithm import BaseAlgorithm
+from buffers.replay_buffer import ReplayBuffer
+
+class SAC(BaseAlgorithm):
+    def __init__(self, 
+                 actor_optimizer: torch.optim.Optimizer, 
+                 critic_optimizer: torch.optim.Optimizer,
+                 alpha_optimizer: torch.optim.Optimizer,
+                 gamma: float = 0.99,
+                 tau: float = 0.005,
+                 alpha: float = 0.2,
+                 autotune: bool = True,
+                 target_entropy: float = -2.0,
+                 batch_size: int = 256):
+        
+        super().__init__()
+        
+        self.actor_optimizer = actor_optimizer
+        self.critic_optimizer = critic_optimizer
+        self.alpha_optimizer = alpha_optimizer
+        
+        self.gamma = gamma
+        self.tau = tau
+        self.batch_size = batch_size
+        
+        self.autotune = autotune
+        if self.autotune:
+            self.target_entropy = target_entropy
+            self.log_alpha = torch.tensor(torch.log(torch.tensor(alpha)), requires_grad=True, device='cpu') 
+        else:
+            self.alpha = alpha
+
+        self.target_critic1 = None
+        self.target_critic2 = None
+
+
+    def update(self, agent: BaseAgent, buffer: ReplayBuffer):
+        if self.target_critic1 is None:
+            self.target_critic1 = deepcopy(agent.architecture.critic1)
+            self.target_critic2 = deepcopy(agent.architecture.critic2)
+            for p in self.target_critic1.parameters():
+                p.requires_grad = False
+            for p in self.target_critic2.parameters():
+                p.requires_grad = False
+            
+            if self.autotune:
+                 self.log_alpha = self.log_alpha
+
+        states, actions, rewards, next_states, dones = buffer.sample(self.batch_size)
+        
+        with torch.no_grad():
+            next_state_actions, next_state_log_pi = agent.get_action_and_log_prob(next_states)
+
+            q1_next, q2_next = self.target_critic1(torch.cat((next_states, next_state_actions), dim=-1)), self.target_critic2(torch.cat((next_states, next_state_actions), dim=-1))
+            min_q_next = torch.min(q1_next, q2_next)
+            
+            alpha = self.log_alpha.exp().item() if self.autotune else self.alpha
+            
+            target_q = rewards + (1 - dones) * self.gamma * (min_q_next - alpha * next_state_log_pi)
+
+        q1, q2 = agent.get_q_values(states, actions)
+        
+        critic_loss = F.mse_loss(q1, target_q) + F.mse_loss(q2, target_q)
+
+        self.critic_optimizer.zero_grad()
+        critic_loss.backward()
+        self.critic_optimizer.step()
+
+        pi, log_pi = agent.get_action_and_log_prob(states)
+        q1_pi, q2_pi = agent.get_q_values(states, pi)
+        min_q_pi = torch.min(q1_pi, q2_pi)
+
+        actor_loss = ((alpha * log_pi) - min_q_pi).mean()
+
+        self.actor_optimizer.zero_grad()
+        actor_loss.backward()
+        self.actor_optimizer.step()
+        
+        alpha_loss = 0
+        if self.autotune:
+            alpha_loss = -(self.log_alpha * (log_pi + self.target_entropy).detach()).mean()
+
+            self.alpha_optimizer.zero_grad()
+            alpha_loss.backward()
+            self.alpha_optimizer.step()
+
+        for param, target_param in zip(agent.architecture.critic1.parameters(), self.target_critic1.parameters()):
+            target_param.data.copy_(self.tau * param.data + (1 - self.tau) * target_param.data)
+
+        for param, target_param in zip(agent.architecture.critic2.parameters(), self.target_critic2.parameters()):
+            target_param.data.copy_(self.tau * param.data + (1 - self.tau) * target_param.data)
+
+        return {
+            "critic_loss": critic_loss.item(),
+            "actor_loss": actor_loss.item(),
+            "alpha_loss": alpha_loss.item() if self.autotune else 0.0,
+            "alpha": alpha,
+            "q_mean": q1.mean().item()
+        }
+        

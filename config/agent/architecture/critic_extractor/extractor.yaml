@@ -1,4 +1,5 @@
-_target_: configs.network.ExtractorConfig
+_target_: networks.extractors.Extractor
+_partial_: true
 
 layer_definitions:
   - type: LayerNorm

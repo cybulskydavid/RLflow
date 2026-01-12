@@ -7,7 +7,7 @@ from torch import Tensor
 
 class ContinuousAgent(BaseAgent):
     def get_action(self, state: np.ndarray, deterministic=False) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-        state = torch.as_tensor(state, dtype=torch.float32).to(self.device)
+        state = torch.as_tensor(state, dtype=torch.float32)
 
         self.architecture.eval()
 
@@ -24,15 +24,15 @@ class ContinuousAgent(BaseAgent):
             log_prob = dist.log_prob(action).sum(axis=-1).unsqueeze(-1)
 
             return (
-                action.detach().cpu().numpy(),
-                log_prob.detach().cpu().numpy(),
-                value.detach().cpu().numpy()
+                action.detach(),
+                log_prob.detach(),
+                value.detach()
             )
 
 
     def evaluate_actions(self, states: np.ndarray, actions: np.ndarray) -> Tuple[Tensor, Tensor, Tensor]:
-        states = torch.as_tensor(states, dtype=torch.float32).to(self.device)
-        actions = torch.as_tensor(actions, dtype=torch.float32).to(self.device)
+        states = torch.as_tensor(states, dtype=torch.float32)
+        actions = torch.as_tensor(actions, dtype=torch.float32) 
 
         self.architecture.train()
 

@@ -4,11 +4,11 @@ from networks.builders import build_layer
 
 
 class Extractor(nn.Module):
-    def __init__(self, obs_dim: int, layer_definitions: List[Any]) -> None:
+    def __init__(self, input_dim: int, layer_definitions: List[Any]) -> None:
         super().__init__()
 
         layers = []
-        input_dim = obs_dim
+        input_dim = input_dim
 
         for layer_definition in layer_definitions:
             layer, input_dim = build_layer(layer_definition, input_dim)

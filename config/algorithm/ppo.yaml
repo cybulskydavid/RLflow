@@ -1,7 +1,7 @@
-name: "ppo"
-_target_: src.algorithms.ppo.PPO
+_target_: algorithms.ppo.PPO
 
-n_epochs: 10
+eps_clip: 0.2
+c_value: 0.5
+c_entropy: 0.01
 batch_size: 64
-vf_coef: 0.5
-ent_coef: 0.01
+n_epochs: 10

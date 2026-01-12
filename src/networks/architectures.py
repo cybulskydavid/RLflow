@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, Tuple
+
+import torch
 from networks import extractors, heads
 from torch import nn, Tensor
 
@@ -31,15 +33,17 @@ class SharedArchitecture(BaseArchitecture):
 
 class SeparatedArchitecture(BaseArchitecture):
     def __init__(self, 
+                 state_dim : int,
+                 action_dim : int,
                  actor_extractor: extractors.Extractor, 
                  actor_head: heads.VectorHead,
                  critic_extractor: extractors.Extractor,
                  critic_head: heads.ScalarHead):
         super().__init__()
-        self.actor_extractor = actor_extractor
-        self.actor_head = actor_head
-        self.critic_extractor = critic_extractor
-        self.critic_head = critic_head
+        self.actor_extractor = actor_extractor(state_dim)
+        self.actor_head = actor_head(self.actor_extractor.feature_dim, action_dim)
+        self.critic_extractor = critic_extractor(state_dim)
+        self.critic_head = critic_head(self.critic_extractor.feature_dim)
     
 
     def forward(self, observations: Tensor) -> Tuple[Any, Tensor]:
@@ -47,3 +51,21 @@ class SeparatedArchitecture(BaseArchitecture):
         critic_features = self.critic_extractor(observations)
         return self.actor_head(actor_features), self.critic_head(critic_features)
         
+
+class SACArchitecture(BaseArchitecture):
+    def __init__(self, 
+                 actor_extractor: extractors.Extractor, 
+                 actor_head: heads.SACHead, 
+                 critic_extractor1: extractors.Extractor,
+                 critic_extractor2: extractors.Extractor,
+                 critic_head1: heads.ScalarHead,
+                 critic_head2: heads.ScalarHead):
+        super().__init__()
+        self.actor = nn.Sequential(actor_extractor, actor_head)
+        self.critic1 = nn.Sequential(critic_extractor1, critic_head1)
+        self.critic2 = nn.Sequential(critic_extractor2, critic_head2)
+
+
+    def forward(self, states: Tensor, actions: Tensor) -> Tuple[Any, Tensor, Tensor]:
+        critic_input = torch.cat([states, actions], dim=-1)
+        return self.actor(states), self.critic1(critic_input), self.critic2(critic_input)

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Any, Dict, Tuple
-
+from torch import Tensor
 import numpy as np
 
 
@@ -24,7 +24,7 @@ class BaseEnv(ABC):
 
 
     @abstractmethod
-    def step(self, action: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray, Dict[str, Any]]:
+    def step(self, action: Tensor) -> Tuple[np.ndarray, np.ndarray, np.ndarray, Dict[str, Any]]:
         pass
 
 

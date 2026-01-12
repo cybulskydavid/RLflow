@@ -10,10 +10,9 @@ class RolloutBuffer(BaseBuffer):
                  buffer_size: int, 
                  state_shape: Tuple[int,...], 
                  action_shape: Tuple[int,...],
-                 device: str = "cpu",
                  gamma: float = 0.99,
                  gae_lambda: float = 0.95):
-        super().__init__(buffer_size, state_shape, action_shape, device)
+        super().__init__(buffer_size, state_shape, action_shape)
         
         self.gamma = gamma
         self.gae_lambda = gae_lambda
@@ -22,7 +21,7 @@ class RolloutBuffer(BaseBuffer):
         self.values = torch.zeros((buffer_size, 1), dtype=torch.float32)
         
         self.advantages = torch.zeros((buffer_size, 1), dtype=torch.float32)
-        self.returns = torch.zeros((buffer_size, 1), dtype=torch.float32)
+        self.returns = torch.zeros((buffer_size, 1), dtype=torch.float32)   
 
 
     def add(self, 
@@ -36,14 +35,12 @@ class RolloutBuffer(BaseBuffer):
         if self.is_full:
             raise RuntimeError
         
-        self.log_probs[self.position] = torch.tensor(log_prob)
-        self.values[self.position] = torch.tensor(value)
+        self.log_probs[self.position] = log_prob
+        self.values[self.position] = value
         super().add(state, action, reward, done)
 
 
-    def compute_gae(self, last_value: float, next_done: bool):
-        
-        last_value = torch.tensor(last_value)
+    def compute_gae(self, last_value: torch.Tensor, next_done: bool):
         last_gae_lam = 0
         
         for step in reversed(range(self.buffer_size)):
@@ -75,12 +72,12 @@ class RolloutBuffer(BaseBuffer):
             batch_inds = indices[start:end]
             
             yield (
-                self.states[batch_inds].to(self.device),
-                self.actions[batch_inds].to(self.device),
-                self.log_probs[batch_inds].to(self.device),
-                self.advantages[batch_inds].to(self.device),
-                self.returns[batch_inds].to(self.device),
-                self.values[batch_inds].to(self.device)
+                self.states[batch_inds],
+                self.actions[batch_inds],
+                self.log_probs[batch_inds],
+                self.advantages[batch_inds],
+                self.returns[batch_inds],
+                self.values[batch_inds]
             )
 
         reset()

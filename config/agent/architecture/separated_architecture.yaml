@@ -5,5 +5,5 @@ defaults:
   - critic_extractor: extractor
   - critic_head: scalar_head
 
-
-_target_: configs.network.SeparatedArchitectureConfig
+_partial_: true
+_target_: networks.architectures.SeparatedArchitecture
