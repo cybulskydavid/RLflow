@@ -1,0 +1,14 @@
+_target_: networks.extractors.Extractor
+_partial_: true
+
+layer_definitions:
+  - type: LayerNorm
+  - type: linear
+    out_features: 64
+    bias: True
+  - type: ReLU
+  - type: LayerNorm
+  - type: linear
+    out_features: 64
+    bias: True
+  - type: ReLU

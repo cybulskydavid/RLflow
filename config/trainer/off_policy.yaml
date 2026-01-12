@@ -1,0 +1,5 @@
+_target_: trainers.off_policy_trainer.OffPolicyTrainer
+
+max_env_steps: 10000000
+warmup_steps: 10000
+log_freq: 2000

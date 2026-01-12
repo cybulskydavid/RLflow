@@ -7,11 +7,12 @@ class OffPolicyTrainer(BaseTrainer):
     def __init__(self, 
                  runner: BaseRunner, 
                  algorithm: BaseAlgorithm,
+                 logger: any,
                  max_env_steps: int = 1_000_000,
                  warmup_steps: int = 10_000,
                  log_freq: int = 1000):
         
-        super().__init__(runner, algorithm)
+        super().__init__(runner, algorithm, logger)
         self.max_env_steps = max_env_steps
         self.warmup_steps = warmup_steps
         self.log_freq = log_freq

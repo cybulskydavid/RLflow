@@ -54,6 +54,8 @@ class SeparatedArchitecture(BaseArchitecture):
 
 class SACArchitecture(BaseArchitecture):
     def __init__(self, 
+                 state_dim : int,
+                 action_dim : int,
                  actor_extractor: extractors.Extractor, 
                  actor_head: heads.SACHead, 
                  critic_extractor1: extractors.Extractor,
@@ -61,9 +63,15 @@ class SACArchitecture(BaseArchitecture):
                  critic_head1: heads.ScalarHead,
                  critic_head2: heads.ScalarHead):
         super().__init__()
-        self.actor = nn.Sequential(actor_extractor, actor_head)
-        self.critic1 = nn.Sequential(critic_extractor1, critic_head1)
-        self.critic2 = nn.Sequential(critic_extractor2, critic_head2)
+        self.actor_extractor = actor_extractor(state_dim)
+        self.actor_head = actor_head(self.actor_extractor.feature_dim, action_dim)
+        self.critic_extractor1 = critic_extractor1(state_dim + action_dim)
+        self.critic_head1 = critic_head1(self.critic_extractor1.feature_dim)
+        self.critic_extractor2 = critic_extractor2(state_dim + action_dim)
+        self.critic_head2 = critic_head2(self.critic_extractor2.feature_dim)
+        self.actor = nn.Sequential(self.actor_extractor, self.actor_head)
+        self.critic1 =  nn.Sequential(self.critic_extractor1, self.critic_head1)
+        self.critic2 =  nn.Sequential(self.critic_extractor2, self.critic_head2)
 
 
     def forward(self, states: Tensor, actions: Tensor) -> Tuple[Any, Tensor, Tensor]:

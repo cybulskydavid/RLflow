@@ -13,14 +13,19 @@ class OffPolicyRunner(BaseRunner):
                  env: BaseEnv, 
                  agent: BaseAgent, 
                  buffer: ReplayBuffer,
-                 cfg: OffPolicyRunnerConfig):
+                 logger: TensorBoardLogger,
+                 seed: int,
+                 start_steps: int,
+                 steps_per_run: int):
         super().__init__(env, agent, buffer)
-        self.config = cfg
-        self.logger = TensorBoardLogger("runs/SAC1")
+        self.logger = logger
 
-        state, _ = self.env.reset(seed=self.config.seed)
+        state, _ = self.env.reset(seed=seed)
         self.state = state
         
+        self.steps_per_run = steps_per_run
+        self.start_steps = start_steps
+
         self.current_ep_reward = 0
         self.current_ep_length = 0
         self.time_step = 0
@@ -29,9 +34,9 @@ class OffPolicyRunner(BaseRunner):
 
 
     def run(self):
-        for _ in range(self.config.steps_per_run):
+        for _ in range(self.steps_per_run):
             
-            if self.global_step < self.config.start_steps:
+            if self.global_step < self.start_steps:
                 action = self.env.env.action_space.sample()
             else:
                 action = self.agent.get_action(self.state, deterministic=False)

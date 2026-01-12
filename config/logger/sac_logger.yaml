@@ -1,0 +1,2 @@
+_target_: utils.tensor_board_logger.TensorBoardLogger
+log_dir: "runs/${now:%Y-%m-%d}/${now:%H-%M-%S}_SAC"

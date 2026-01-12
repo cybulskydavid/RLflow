@@ -7,8 +7,6 @@ import hydra
 from configs import register_configs
 from trainers.base_trainer import BaseTrainer
 
-import os
-
 def set_global_seed(seed: int):
     random.seed(seed)
     np.random.seed(seed)
