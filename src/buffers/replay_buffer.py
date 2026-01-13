@@ -27,7 +27,7 @@ class ReplayBuffer(BaseBuffer):
         self.dones[index] = torch.as_tensor(done).float()
         self.next_states[index] = torch.as_tensor(next_state).float()
 
-        self.position = (self.position + 1) % self.buffer_size
+        self.position = self.position + 1
     
         self.is_full = (self.position >= self.buffer_size)
 
