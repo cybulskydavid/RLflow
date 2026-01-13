@@ -1,3 +1,4 @@
+from importlib.resources import path
 from typing import Any
 import torch
 from agents.base import BaseAgent
@@ -85,3 +86,17 @@ class PPO(BaseAlgorithm):
             "policy/kl_divergence": avg_kl / total_updates,
             "policy/clip_fraction": avg_clip_frac / total_updates,
         }
+    
+    
+    def get_state_dict(self, agent):
+        state = {
+            "agent_state_dict": agent.architecture.state_dict(),
+            "optimizer_state_dict": self.optimizer.state_dict(),
+        }
+
+        return state
+
+
+    def load_state_dict(self, agent, state_dict):
+        agent.architecture.load_state_dict(state_dict["agent_state_dict"])
+        self.optimizer.load_state_dict(state_dict["optimizer_state_dict"])

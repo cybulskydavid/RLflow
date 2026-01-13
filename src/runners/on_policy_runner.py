@@ -14,7 +14,7 @@ class OnPolicyRunner(BaseRunner):
                  env: BaseEnv, 
                  agent: BaseAgent, 
                  buffer: RolloutBuffer, 
-                 logger: TensorBoardLogger = None):
+                 logger: TensorBoardLogger):
         super().__init__(env, agent, buffer)
         state, _ = self.env.reset(42)
         self.state = state

@@ -32,7 +32,12 @@ def main(cfg: DictConfig):
 
     logger = hydra.utils.instantiate(cfg.logger)
     runner = hydra.utils.instantiate(cfg.runner, env=env, agent=agent, buffer=buffer, logger=logger)
-    trainer = BaseTrainer(runner, algorithm, logger)
+    trainer = hydra.utils.instantiate(
+        cfg.trainer,
+        runner=runner,
+        algorithm=algorithm,
+        logger=logger
+    )
     trainer.train()
 
 if __name__ == "__main__":

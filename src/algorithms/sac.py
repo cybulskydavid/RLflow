@@ -4,6 +4,7 @@ from copy import deepcopy
 from agents.base import BaseAgent
 from algorithms.base_algorithm import BaseAlgorithm
 from buffers.replay_buffer import ReplayBuffer
+from configs import agent
 
 class SAC(BaseAlgorithm):
     def __init__(self, 
@@ -117,3 +118,34 @@ class SAC(BaseAlgorithm):
             "actor/action_abs_mean": action_abs_mean
         }
         
+    
+    def get_state_dict(self, agent):
+        state = {
+            "actor": agent.architecture.actor.state_dict(),
+            "critic1": agent.architecture.critic1.state_dict(),
+            "critic2": agent.architecture.critic2.state_dict(),
+            "target_critic1": self.target_critic1.state_dict(),
+            "target_critic2": self.target_critic2.state_dict(),
+            "actor_optim": self.actor_optimizer.state_dict(),
+            "critic_optim": self.critic_optimizer.state_dict(),
+            "log_alpha": self.log_alpha.detach().cpu(), 
+            "alpha_optim": self.alpha_optimizer.state_dict() if self.autotune else None
+        }
+        
+        return state
+
+
+    def load_state_dict(self, agent, state_dict):
+        agent.architecture.actor.load_state_dict(state_dict["actor"])
+        agent.architecture.critic1.load_state_dict(state_dict["critic1"])
+        agent.architecture.critic2.load_state_dict(state_dict["critic2"])
+        self.target_critic1.load_state_dict(state_dict["target_critic1"])
+        self.target_critic2.load_state_dict(state_dict["target_critic2"])
+        self.actor_optimizer.load_state_dict(state_dict["actor_optim"])
+        self.critic_optimizer.load_state_dict(state_dict["critic_optim"])
+    
+        if "log_alpha" in state_dict:
+            with torch.no_grad():
+                self.log_alpha.copy_(state_dict["log_alpha"])
+        if self.autotune and state_dict["alpha_optim"] is not None:
+            self.alpha_optimizer.load_state_dict(state_dict["alpha_optim"])

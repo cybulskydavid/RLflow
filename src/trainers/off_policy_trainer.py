@@ -1,3 +1,4 @@
+import os
 import torch
 from algorithms.base_algorithm import BaseAlgorithm
 from runners.base_runner import BaseRunner
@@ -9,14 +10,13 @@ class OffPolicyTrainer(BaseTrainer):
                  runner: BaseRunner, 
                  algorithm: BaseAlgorithm,
                  logger: TensorBoardLogger,
-                 max_env_steps: int = 1_000_000,
-                 warmup_steps: int = 10_000,
-                 log_freq: int = 1000):
-        
-        super().__init__(runner, algorithm, logger)
+                 max_env_steps: int,
+                 warmup_steps: int,
+                 steps_per_save: int,
+                 save_path: str):
+        super().__init__(runner, algorithm, logger, save_path, steps_per_save)
         self.max_env_steps = max_env_steps
         self.warmup_steps = warmup_steps
-        self.log_freq = log_freq
 
     def train(self):
         print(f"Start treningu Off-Policy (Max Steps: {self.max_env_steps}, Warmup: {self.warmup_steps})")
@@ -29,3 +29,9 @@ class OffPolicyTrainer(BaseTrainer):
                 stats = self.algorithm.update(self.runner.agent, self.runner.buffer)
                 
                 self.logger.log_metrics(stats, self.runner.global_step)
+
+            if self.runner.global_step % self.steps_per_save == 0:
+                os.makedirs(self.save_path, exist_ok=True)
+                state_dict = self.algorithm.get_state_dict(self.runner.agent)
+                torch.save(state_dict, f"{self.save_path}/checkpoint_{self.runner.global_step}.pth")
+                print(f"Saved checkpoint at step {self.runner.global_step}")
