@@ -2,12 +2,13 @@ import torch
 from algorithms.base_algorithm import BaseAlgorithm
 from runners.base_runner import BaseRunner
 from trainers.base_trainer import BaseTrainer
+from utils.tensor_board_logger import TensorBoardLogger
 
 class OffPolicyTrainer(BaseTrainer):
     def __init__(self, 
                  runner: BaseRunner, 
                  algorithm: BaseAlgorithm,
-                 logger: any,
+                 logger: TensorBoardLogger,
                  max_env_steps: int = 1_000_000,
                  warmup_steps: int = 10_000,
                  log_freq: int = 1000):
@@ -27,11 +28,4 @@ class OffPolicyTrainer(BaseTrainer):
             if self.runner.global_step > self.warmup_steps:
                 stats = self.algorithm.update(self.runner.agent, self.runner.buffer)
                 
-                if self.runner.global_step % self.log_freq == 0:
-                    self._log_stats(stats, self.runner.global_step)
-
-    def _log_stats(self, stats: dict, step: int):
-        log_str = f"Step: {step} | "
-        for k, v in stats.items():
-            log_str += f"{k}: {v:.4f} | "
-        print(log_str)
+                self.logger.log_metrics(stats, self.runner.global_step)

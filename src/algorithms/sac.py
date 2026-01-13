@@ -51,7 +51,7 @@ class SAC(BaseAlgorithm):
                  self.log_alpha = self.log_alpha
 
         states, actions, rewards, next_states, dones = buffer.sample(self.batch_size)
-        
+
         with torch.no_grad():
             next_state_actions, next_state_log_pi = agent.get_action_and_log_prob(next_states)
 
@@ -94,11 +94,26 @@ class SAC(BaseAlgorithm):
         for param, target_param in zip(agent.architecture.critic2.parameters(), self.target_critic2.parameters()):
             target_param.data.copy_(self.tau * param.data + (1 - self.tau) * target_param.data)
 
+        with torch.no_grad():
+            entropy = -log_pi.mean().item()
+            
+            q_min = q1.min().item()
+            q_max = q1.max().item()
+            q_std = q1.std().item()
+
+            action_abs_mean = pi.abs().mean().item()
+
         return {
-            "critic_loss": critic_loss.item(),
-            "actor_loss": actor_loss.item(),
-            "alpha_loss": alpha_loss.item() if self.autotune else 0.0,
-            "alpha": alpha,
-            "q_mean": q1.mean().item()
+            "loss/critic": critic_loss.item(),
+            "loss/actor": actor_loss.item(),
+            "loss/alpha": alpha_loss.item() if self.autotune else 0.0,
+            "train/alpha": alpha,
+            "train/entropy": entropy,
+            "train/target_entropy": self.target_entropy,
+            "critic/q_mean": q1.mean().item(),
+            "critic/q_min": q_min,
+            "critic/q_max": q_max,
+            "critic/q_std": q_std,
+            "actor/action_abs_mean": action_abs_mean
         }
         

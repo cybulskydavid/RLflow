@@ -4,11 +4,6 @@ import numpy as np
 import random
 from omegaconf import DictConfig
 from hydra.utils import instantiate
-from configs.runner import OffPolicyRunnerConfig
-
-from runners.off_policy_runner import OffPolicyRunner
-from trainers.off_policy_trainer import OffPolicyTrainer
-from algorithms.sac import SAC
 
 def set_global_seed(seed: int):
     random.seed(seed)
@@ -46,8 +41,9 @@ def main(cfg: DictConfig):
         [{'params': agent.architecture.critic1.parameters(), 'lr': 1e-3},
          {'params': agent.architecture.critic2.parameters(), 'lr': 1e-3}],
     )
-    
-    log_alpha = torch.zeros(1, requires_grad=True)
+
+    init_alpha = 0.05  
+    log_alpha = torch.tensor([np.log(init_alpha)], dtype=torch.float32, requires_grad=True)
     alpha_optim = torch.optim.Adam([log_alpha], lr=3e-4)
 
     algorithm = hydra.utils.instantiate(

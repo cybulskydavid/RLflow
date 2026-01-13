@@ -26,7 +26,7 @@ class RolloutBuffer(BaseBuffer):
 
     def add(self, 
             state: np.ndarray, 
-            action :np.ndarray, 
+            action: np.ndarray, 
             reward: float, 
             done: bool, 
             log_prob: float, 

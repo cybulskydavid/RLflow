@@ -3,12 +3,12 @@ _partial_: true
 
 layer_definitions:
   - type: linear
-    out_features: 64
+    out_features: 256
     bias: True
-  - type: ReLU
   - type: LayerNorm
+  - type: ReLU
   - type: linear
-    out_features: 64
+    out_features: 256
     bias: True
-  - type: ReLU
   - type: LayerNorm
+  - type: ReLU

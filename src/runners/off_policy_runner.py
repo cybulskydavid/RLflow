@@ -28,7 +28,6 @@ class OffPolicyRunner(BaseRunner):
 
         self.current_ep_reward = 0
         self.current_ep_length = 0
-        self.time_step = 0
         self.episode = 1
         self.global_step = 0
 
@@ -48,7 +47,6 @@ class OffPolicyRunner(BaseRunner):
 
             self.current_ep_reward += reward
             self.current_ep_length += 1
-            self.time_step += 1
             self.global_step += 1
 
             self.buffer.add(
