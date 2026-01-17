@@ -47,9 +47,6 @@ class SAC(BaseAlgorithm):
                 p.requires_grad = False
             for p in self.target_critic2.parameters():
                 p.requires_grad = False
-            
-            if self.autotune:
-                 self.log_alpha = self.log_alpha
 
         states, actions, rewards, next_states, dones = buffer.sample(self.batch_size)
 
@@ -136,6 +133,11 @@ class SAC(BaseAlgorithm):
 
 
     def load_state_dict(self, agent, state_dict):
+        if self.target_critic1 is None:
+            self.target_critic1 = deepcopy(agent.architecture.critic1)
+        if self.target_critic2 is None:
+            self.target_critic2 = deepcopy(agent.architecture.critic2)
+        
         agent.architecture.actor.load_state_dict(state_dict["actor"])
         agent.architecture.critic1.load_state_dict(state_dict["critic1"])
         agent.architecture.critic2.load_state_dict(state_dict["critic2"])

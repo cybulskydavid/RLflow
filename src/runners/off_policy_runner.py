@@ -71,3 +71,15 @@ class OffPolicyRunner(BaseRunner):
                 self.current_ep_reward = 0
                 self.current_ep_length = 0
                 self.episode += 1
+
+    def run_inference(self):
+        done = False
+        state, _ = self.env.reset(np.random.randint(0, 10000))
+        total_reward = 0
+        while not done:
+            action = torch.tensor(self.agent.get_action(state, deterministic=True)).float()
+            next_state, reward, terminated, truncated, info = self.env.step(action)
+            done = truncated or terminated
+            total_reward += reward
+            state = next_state
+        print(f"Total Reward during Inference: {total_reward}")

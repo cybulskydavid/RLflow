@@ -29,16 +29,15 @@ def main(cfg: DictConfig):
         cfg.buffer,
         state_shape=env.spec.obs_shape, 
         action_shape=env.spec.action_shape)
+    
+    if cfg.checkpoint_path:
+        checkpoint = torch.load(cfg.checkpoint_path)
+        algorithm.load_state_dict(agent, checkpoint)
 
     logger = hydra.utils.instantiate(cfg.logger)
     runner = hydra.utils.instantiate(cfg.runner, env=env, agent=agent, buffer=buffer, logger=logger)
-    trainer = hydra.utils.instantiate(
-        cfg.trainer,
-        runner=runner,
-        algorithm=algorithm,
-        logger=logger
-    )
-    trainer.train()
+    while True:
+        runner.run_inference()
 
 if __name__ == "__main__":
     register_configs()

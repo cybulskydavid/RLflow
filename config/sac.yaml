@@ -10,4 +10,4 @@ defaults:
   - trainer: off_policy
 
 seed: 42
-  
+checkpoint_path: checkpoints/off_policy/2026-01-13/15-04-05/checkpoint_950000.pth 

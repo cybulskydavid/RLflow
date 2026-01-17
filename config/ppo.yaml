@@ -11,3 +11,4 @@ defaults:
 
 _target_: configs.train.TrainConfig
 seed: 42
+checkpoint_path: checkpoints/on_policy/2026-01-13/15-03-37/checkpoint_3600.pth
