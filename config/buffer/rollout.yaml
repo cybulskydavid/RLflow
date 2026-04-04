@@ -1,0 +1,4 @@
+_target_: buffers.rollout_buffer.RolloutBuffer
+buffer_size: 2048
+gamma: 0.99
+gae_lambda: 0.95

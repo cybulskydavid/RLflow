@@ -1,0 +1,6 @@
+_target_: trainers.off_policy_trainer.OffPolicyTrainer
+
+max_env_steps: 500000
+warmup_steps: 30000
+steps_per_save: 50000
+save_path: "checkpoints/off_policy/${now:%Y-%m-%d}/${now:%H-%M-%S}"

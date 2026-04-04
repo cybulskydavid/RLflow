@@ -1,0 +1,3 @@
+_target_: networks.heads.IndependentStdHead
+_partial_: true
+initial_log_std: -0.5

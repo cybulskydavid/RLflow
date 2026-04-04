@@ -1,0 +1,2 @@
+_target_: networks.heads.ScalarHead
+_partial_: true

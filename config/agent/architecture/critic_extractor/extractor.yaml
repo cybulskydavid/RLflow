@@ -1,0 +1,14 @@
+_target_: networks.extractors.Extractor
+_partial_: true
+
+layer_definitions:
+  - type: linear
+    out_features: 256
+    bias: True
+  # - type: LayerNorm
+  - type: Tanh
+  - type: linear
+    out_features: 256
+    bias: True
+  # - type: LayerNorm
+  - type: Tanh

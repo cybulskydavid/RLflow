@@ -1,0 +1,20 @@
+cls:
+  _target_: torch.optim.Adam
+  _partial_: true
+  lr: 0.0003
+
+params:
+  actor_extractor:
+    lr: ${optimizer.lr_actor}  
+  
+  actor_head:
+    lr: ${optimizer.lr_actor}
+
+  critic_extractor:
+    lr: ${optimizer.lr_critic}
+
+  critic_head:
+    lr: ${optimizer.lr_critic}
+
+lr_actor: 0.00003
+lr_critic: 0.0001

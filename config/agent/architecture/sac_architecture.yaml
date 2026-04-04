@@ -1,0 +1,11 @@
+defaults:
+  - _self_
+  - actor_extractor: extractor
+  - actor_head: independent_std_head
+  - critic_extractor1: extractor
+  - critic_head1: scalar_head
+  - critic_extractor2: extractor
+  - critic_head2: scalar_head
+
+_partial_: true
+_target_: networks.architectures.SACArchitecture

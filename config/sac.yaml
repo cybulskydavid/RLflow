@@ -1,0 +1,13 @@
+defaults:
+  - _self_
+  - env: bipedal_walker
+  - buffer: replay
+  - agent: sac_agent
+  - algorithm: sac
+  - optimizer: sac_optimizer
+  - runner: off_policy
+  - logger: sac_logger
+  - trainer: off_policy
+
+seed: 42
+checkpoint_path: checkpoints/off_policy/2026-01-13/15-04-05/checkpoint_950000.pth 

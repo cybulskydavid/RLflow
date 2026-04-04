@@ -1,0 +1,9 @@
+defaults:
+  - _self_
+  - actor_extractor: extractor
+  - actor_head: independent_std_head
+  - critic_extractor: extractor
+  - critic_head: scalar_head
+
+_partial_: true
+_target_: networks.architectures.SeparatedArchitecture

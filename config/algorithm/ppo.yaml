@@ -1,0 +1,7 @@
+_target_: algorithms.ppo.PPO
+
+eps_clip: 0.2
+c_value: 0.5
+c_entropy: 0.01
+batch_size: 64
+n_epochs: 10
