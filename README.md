@@ -36,11 +36,11 @@ SAC is an Off-Policy algorithm based on the *Maximum Entropy Reinforcement Learn
 ### 1. Proximal Policy Optimization (PPO)
 PPO is a policy gradient method that optimizes a surrogate objective function. A key innovation is the use of a clipping mechanism, which prevents excessively large policy updates and increases training stability. The full objective function that the algorithm strives to maximize consists of three components: the policy objective, the value function error, and an entropy bonus:
 
-$$J^{PPO}(\theta)=\hat{E}_{t}[L_{t}^{CLIP}(\theta)-c_{1}L_{t}^{VF}(\theta)+c_{2}S[\pi_{\theta}](s_{t})]$$
+$$J^{PPO}(\theta)=\hat{E}_{t} \left[ L_{t}^{CLIP}(\theta)-c_{1}L_{t}^{VF}(\theta)+c_{2}S \left[ \pi_{\theta} \right](s_{t}) \right]$$
 
 * **Clipped Policy Objective ($L^{CLIP}$):** Limits the update size by clipping the probability ratio $r_{t}(\theta)$ to prevent abrupt changes to the policy.
 
-$$L^{CLIP}(\theta)=\hat{E_{t}}[\min(r_{t}(\theta)\hat{A}_{t},\text{clip}(r_{t}(\theta),1-\epsilon,1+\epsilon)\hat{A}_{t})]$$
+$$L^{CLIP}(\theta)=\hat{E_{t}} \left[ \min(r_{t}(\theta)\hat{A}_{t},\text{clip}(r_{t}(\theta),1-\epsilon,1+\epsilon)\hat{A}_{t}) \right]$$
 
 $$r_{t}(\theta)=\frac{\pi_{\theta}(a_{t}|s_{t})}{\pi_{\theta_{old}}(a_{t}|s_{t})}=\exp(\log\pi_{\theta}(a_{t}|s_{t})-\log\pi_{\theta_{old}}(a_{t}|s_{t}))$$
 
@@ -61,25 +61,25 @@ $$S=\mathcal{H}(\pi(\cdot|s_{t}))$$
 ### 2. Soft Actor-Critic (SAC)
 SAC aims to find an optimal policy $\pi^{*}$ that maximizes both the expected sum of rewards and the entropy of the strategy, a concept known as Maximum Entropy Reinforcement Learning.
 
-$$J(\pi)=\sum_{t=0}^{T}E_{(s_{t},a_{t})\sim\rho_{\pi}}[r(s_{t},a_{t})+\alpha\mathcal{H}(\pi(\cdot|s_{t}))]$$
+$$J(\pi)=\sum_{t=0}^{T}E_{(s_{t},a_{t})\sim\rho_{\pi}} \left[ r(s_{t},a_{t})+\alpha\mathcal{H}(\pi(\cdot|s_{t})) \right]$$
 
 where $\alpha$ (temperature) determines the relative weight of the entropy against the reward.
 
 * **Critic Optimization:** The algorithm uses two Q-functions (parameterized by $\theta_{1}$ and $\theta_{2}$) to reduce overestimation. The parameters are updated by minimizing the mean squared error against the target $y_{t}$.
 
-$$J_{Q}(\theta)=E_{\mathcal{D}}[\frac{1}{2}(Q_{\theta_{1}}(s_{t},a_{t})-y_{t})^{2}+\frac{1}{2}(Q_{\theta_{2}}(s_{t},a_{t})-y_{t})^{2}]$$
+$$J_{Q}(\theta)=E_{\mathcal{D}} \left[ \frac{1}{2}(Q_{\theta_{1}}(s_{t},a_{t})-y_{t})^{2}+\frac{1}{2}(Q_{\theta_{2}}(s_{t},a_{t})-y_{t})^{2} \right]$$
 
-$$y_{t}=r(s_{t},a_{t})+\gamma(1-d_{t})(\min_{j=1,2}Q_{\bar{\theta}_{j}}(s_{t+1},\tilde{a}_{t+1})-\alpha\log\pi_{\phi}(\tilde{a}_{t+1}|s_{t+1}))$$
+$$y_{t}=r(s_{t},a_{t})+\gamma(1-d_{t}) \left( \min_{j=1,2}Q_{\bar{\theta}_{j}}(s_{t+1},\tilde{a}_{t+1})-\alpha\log\pi_{\phi}(\tilde{a}_{t+1}|s_{t+1}) \right)$$
 
 * **Actor Optimization:** The policy is improved by maximizing expected return and entropy. SAC uses the reparameterization trick to allow backpropagation through the random sampling process:
 
 $$a_{t}=f_{\phi}(\epsilon_{t};s_{t})=\tanh(\mu_{\phi}(s_{t})+\sigma_{\phi}(s_{t})\cdot\epsilon_{t})$$
 
-$$J_{\pi}(\phi)=E_{s_{t}\sim\mathcal{D},\epsilon_{t}\sim\mathcal{N}}[\alpha\log\pi_{\phi}(f_{\phi}(\epsilon_{t};s_{t})|s_{t})-\min_{j=1,2}Q_{\theta_{j}}(s_{t},f_{\phi}(\epsilon_{t};s_{t}))]$$
+$$J_{\pi}(\phi)=E_{s_{t}\sim\mathcal{D},\epsilon_{t}\sim\mathcal{N}} \left[ \alpha\log\pi_{\phi}(f_{\phi}(\epsilon_{t};s_{t})|s_{t})-\min_{j=1,2}Q_{\theta_{j}}(s_{t},f_{\phi}(\epsilon_{t};s_{t})) \right]$$
 
 * **Temperature Optimization:** The temperature $\alpha$ dynamically controls the balance between exploration and exploitation to keep the policy entropy near the target level $\bar{\mathcal{H}}$.
 
-$$J(\alpha)=E_{a_{t}\sim\bar{\pi_{t}}}[-\alpha(\log\pi_{t}(a_{t}|s_{t})+\bar{\mathcal{H}})]$$
+$$J(\alpha)=E_{a_{t}\sim\bar{\pi_{t}}} \left[ -\alpha(\log\pi_{t}(a_{t}|s_{t})+\bar{\mathcal{H}}) \right]$$
 ---
 
 ## ⚙️ Project Structure
@@ -132,11 +132,11 @@ The results derived from the training plot lead to several key conclusions for t
 
 ### Agents in the Environment (Inference)
 
-**PPO Agent after training:** <video src="readme/ppo.mp4" controls="controls" muted="muted" style="max-height:640px;">
-</video>
+**PPO Agent after training:**
+<video src="readme/ppo.mp4" controls muted width="100%"></video>
 
-**SAC Agent after training:** <video src="readme/sac.mp4" controls="controls" muted="muted" style="max-height:640px;">
-</video>
+**SAC Agent after training:**
+<video src="readme/sac.mp4" controls muted width="100%"></video>
 
 ---
 
