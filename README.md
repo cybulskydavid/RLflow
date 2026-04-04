@@ -132,17 +132,15 @@ The results derived from the training plot lead to several key conclusions for t
 
 ### Agents in the Environment (Inference)
 
-**PPO Agent after training:**
-<video src="readme/ppo.mp4" controls muted width="100%"></video>
+**PPO Agent after training:** ![PPO Agent](readme/ppo.gif)
 
-**SAC Agent after training:**
-<video src="readme/sac.mp4" controls muted width="100%"></video>
+**SAC Agent after training:** ![SAC Agent](readme/sac.gif)
 
 ---
 
 ## 🚀 How to Run the Project
 
-**Requirements:** `Python 3.8+`, `PyTorch`, `Gymnasium[box2d]`, `Hydra-core`.<video controls src="2026-04-04 22-59-44.mp4" title="Title"></video>
+**Requirements:** `Python 3.8+`, `PyTorch`, `Gymnasium[box2d]`, `Hydra-core`.
 
 **Training the SAC model:**
 ```bash
