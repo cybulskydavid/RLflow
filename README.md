@@ -36,7 +36,7 @@ SAC is an Off-Policy algorithm based on the *Maximum Entropy Reinforcement Learn
 ### 1. Proximal Policy Optimization (PPO)
 PPO is a policy gradient method that optimizes a surrogate objective function. A key innovation is the use of a clipping mechanism, which prevents excessively large policy updates and increases training stability. The full objective function that the algorithm strives to maximize consists of three components: the policy objective, the value function error, and an entropy bonus:
 
-$$J^{PPO}(\theta)=\hat{E}_{t} \left[ L_{t}^{CLIP}(\theta)-c_{1}L_{t}^{VF}(\theta)+c_{2}S \left[ \pi_{\theta} \right](s_{t}) \right]$$
+$$J^{PPO}(\theta) = \hat{\mathbb{E}}_t \left[ L_t^{CLIP}(\theta) - c_1 L_t^{VF}(\theta) + c_2 S[\pi_\theta](s_t) \right]$$
 
 * **Clipped Policy Objective ($L^{CLIP}$):** Limits the update size by clipping the probability ratio $r_{t}(\theta)$ to prevent abrupt changes to the policy.
 
