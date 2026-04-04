@@ -19,7 +19,7 @@ class BaseTrainer:
         self.steps_per_save = steps_per_save
 
     def train(self):
-        for step in range(100_000):
+        for step in range(100000):
             self.runner.run()
             stats = self.algorithm.update(self.runner.agent, self.runner.buffer)
             self.logger.log_metrics(stats, step)
@@ -27,5 +27,5 @@ class BaseTrainer:
             if step % self.steps_per_save == 0:
                 os.makedirs(self.save_path, exist_ok=True)
                 state_dict = self.algorithm.get_state_dict(self.runner.agent)
-                torch.save(state_dict, f"{self.save_path}/checkpoint_{step}.pth")
-                print(f"Saved checkpoint at step {step}")
+                torch.save(state_dict, f"{self.save_path}/checkpoint_{step*10240}.pth")
+                print(f"Saved checkpoint at step {step*10240}")

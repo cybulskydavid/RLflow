@@ -1,0 +1,79 @@
+_target_: configs.train.TrainConfig
+seed: 42
+checkpoint_path: checkpoints/on_policy/2026-01-17/23-25-43/checkpoint_1100.pth
+env:
+  _target_: envs.gym_env.GymEnv
+  id: BipedalWalker-v3
+agent:
+  _target_: agents.continuous.ContinuousAgent
+  architecture:
+    _partial_: true
+    _target_: networks.architectures.SeparatedArchitecture
+    actor_extractor:
+      _target_: networks.extractors.Extractor
+      _partial_: true
+      layer_definitions:
+      - type: linear
+        out_features: 256
+        bias: true
+      - type: Tanh
+      - type: linear
+        out_features: 256
+        bias: true
+      - type: Tanh
+    actor_head:
+      _target_: networks.heads.IndependentStdHead
+      _partial_: true
+      initial_log_std: -0.5
+    critic_extractor:
+      _target_: networks.extractors.Extractor
+      _partial_: true
+      layer_definitions:
+      - type: linear
+        out_features: 256
+        bias: true
+      - type: Tanh
+      - type: linear
+        out_features: 256
+        bias: true
+      - type: Tanh
+    critic_head:
+      _target_: networks.heads.ScalarHead
+      _partial_: true
+algorithm:
+  _target_: algorithms.ppo.PPO
+  eps_clip: 0.2
+  c_value: 0.5
+  c_entropy: 0.01
+  batch_size: 64
+  n_epochs: 10
+buffer:
+  _target_: buffers.rollout_buffer.RolloutBuffer
+  buffer_size: 2048
+  gamma: 0.99
+  gae_lambda: 0.95
+runner:
+  _target_: runners.on_policy_runner.OnPolicyRunner
+optimizer:
+  cls:
+    _target_: torch.optim.Adam
+    _partial_: true
+    lr: 0.0003
+  params:
+    actor_extractor:
+      lr: ${optimizer.lr_actor}
+    actor_head:
+      lr: ${optimizer.lr_actor}
+    critic_extractor:
+      lr: ${optimizer.lr_critic}
+    critic_head:
+      lr: ${optimizer.lr_critic}
+  lr_actor: 3.0e-05
+  lr_critic: 0.0001
+logger:
+  _target_: utils.tensor_board_logger.TensorBoardLogger
+  log_dir: runs/${now:%Y-%m-%d}/${now:%H-%M-%S}_PPO
+trainer:
+  _target_: trainers.base_trainer.BaseTrainer
+  steps_per_save: 5
+  save_path: checkpoints/on_policy/${now:%Y-%m-%d}/${now:%H-%M-%S}

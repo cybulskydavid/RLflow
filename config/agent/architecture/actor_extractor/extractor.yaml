@@ -5,10 +5,10 @@ layer_definitions:
   - type: linear
     out_features: 256
     bias: True
-  - type: LayerNorm
-  - type: ReLU
+  # - type: LayerNorm
+  - type: Tanh
   - type: linear
     out_features: 256
     bias: True
-  - type: LayerNorm
-  - type: ReLU
+  # - type: LayerNorm
+  - type: Tanh

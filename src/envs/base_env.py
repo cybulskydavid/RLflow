@@ -10,6 +10,8 @@ class EnvSpec:
     obs_shape: Tuple[int, ...]
     action_shape: Tuple[int, ...]
     action_type: str
+    action_min: Tuple[float, ...]
+    action_max: Tuple[float, ...]
 
 
 class BaseEnv(ABC):

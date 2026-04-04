@@ -1,4 +1,4 @@
 _target_: trainers.base_trainer.BaseTrainer
 
-steps_per_save: 100
+steps_per_save: 5
 save_path: "checkpoints/on_policy/${now:%Y-%m-%d}/${now:%H-%M-%S}"

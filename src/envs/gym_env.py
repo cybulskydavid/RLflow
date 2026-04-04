@@ -13,6 +13,8 @@ class GymEnv(BaseEnv):
             obs_shape=self.env.observation_space.shape,
             action_shape=self.env.action_space.shape,
             action_type="discrete" if isinstance(self.env.action_space, gym.spaces.Discrete) else "continuous",
+            action_min=self.env.action_space.low,
+            action_max=self.env.action_space.high
         )
 
     @property
@@ -26,7 +28,9 @@ class GymEnv(BaseEnv):
 
     def step(self, 
              action: Tensor) -> Tuple[np.ndarray, np.ndarray, np.ndarray, Dict[str, Any]]:
-        return self.env.step(action.numpy())
+        if isinstance(action, Tensor):
+            action = action.numpy()
+        return self.env.step(action)
 
 
     def close(self) -> None:

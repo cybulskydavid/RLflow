@@ -16,8 +16,8 @@ class VectorHead(nn.Module):
     def __init__(self, feature_dim: int, action_dim: int):
         super().__init__()
         self.model = nn.Sequential(
-            nn.Linear(feature_dim, action_dim),
-            nn.Tanh())
+            nn.Linear(feature_dim, action_dim))
+            # nn.Tanh())
 
 
     def forward(self, features:Tensor) -> Tensor:

@@ -6,9 +6,9 @@ defaults:
   - buffer: rollout
   - runner: on_policy
   - optimizer: ppo_optimizer
-  - logger: tensor_board_logger
+  - logger: ppo_logger
   - trainer: on_policy_traner
 
 _target_: configs.train.TrainConfig
 seed: 42
-checkpoint_path: checkpoints/on_policy/2026-01-13/15-03-37/checkpoint_3600.pth
+checkpoint_path: checkpoints/on_policy/2026-01-17/23-25-43/checkpoint_1100.pth

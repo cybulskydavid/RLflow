@@ -1,5 +1,4 @@
 import numpy as np
-import torch
 from agents.base import BaseAgent
 from buffers.rollout_buffer import RolloutBuffer
 from runners.base_runner import BaseRunner
@@ -33,7 +32,8 @@ class OnPolicyRunner(BaseRunner):
                 self.buffer.compute_gae(last_value, done)
                 break
             action, log_prob, value = self.agent.get_action(self.state)
-            next_state, reward, terminated, truncated, info = self.env.step(action)
+            action_clipped = np.clip(action.numpy(), self.env.spec.action_min, self.env.spec.action_max)
+            next_state, reward, terminated, truncated, info = self.env.step(action_clipped)
             done = truncated or terminated
 
             self.current_ep_reward += reward
