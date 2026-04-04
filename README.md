@@ -36,7 +36,9 @@ SAC is an Off-Policy algorithm based on the *Maximum Entropy Reinforcement Learn
 ### 1. Proximal Policy Optimization (PPO)
 PPO is a policy gradient method that optimizes a surrogate objective function. A key innovation is the use of a clipping mechanism, which prevents excessively large policy updates and increases training stability. The full objective function that the algorithm strives to maximize consists of three components: the policy objective, the value function error, and an entropy bonus:
 
-$$J^{PPO}(\theta) = \hat{\mathbb{E}}_t \left[ L_t^{CLIP}(\theta) - c_1 L_t^{VF}(\theta) + c_2 S[\pi_\theta](s_t) \right]$$
+$$
+J^{PPO}(\theta) = \hat{E}_t \left[ L_t^{CLIP}(\theta) - c_1 L_t^{VF}(\theta) + c_2 S[\pi_\theta](s_t) \right]
+$$
 
 * **Clipped Policy Objective ($L^{CLIP}$):** Limits the update size by clipping the probability ratio $r_{t}(\theta)$ to prevent abrupt changes to the policy.
 
@@ -79,7 +81,8 @@ $$J_{\pi}(\phi)=E_{s_{t}\sim\mathcal{D},\epsilon_{t}\sim\mathcal{N}} \left[ \alp
 
 * **Temperature Optimization:** The temperature $\alpha$ dynamically controls the balance between exploration and exploitation to keep the policy entropy near the target level $\bar{\mathcal{H}}$.
 
-$$J(\alpha)=E_{a_{t}\sim\bar{\pi_{t}}} \left[ -\alpha(\log\pi_{t}(a_{t}|s_{t})+\bar{\mathcal{H}}) \right]$$
+$$J(\alpha) = \mathbb{E}_{a_t \sim \pi_t} \left[ -\alpha \left( \log \pi_t(a_t | s_t) + \bar{\mathcal{H}} \right) \right]$$
+
 ---
 
 ## ⚙️ Project Structure
